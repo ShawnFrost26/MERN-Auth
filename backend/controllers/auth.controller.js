@@ -1,6 +1,6 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { generateVerificationToken } from "../utils/generateVerificationCode.js";
+import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 
 export const signup = async (req, res) => {
   const { email, password, name } = req.body;
@@ -18,13 +18,15 @@ export const signup = async (req, res) => {
 
     const hashedpassword = await bcrypt.hash(password, 10);
 
-    const verificationToken = generateVerificationToken();
+    const verificationToken =  Math.floor(100000 + Math.random() * 90000).toString();
+    console.log("verificationToken: ", verificationToken);
+    
 
     const user = new User({
       email,
       password: hashedpassword,
       name,
-      verificationToken,
+      verificationToken: verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
     });
 
