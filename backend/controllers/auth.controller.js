@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { sendVerificationEmail } from "../mailtrap/emails.js";
 
 export const signup = async (req, res) => {
   const { email, password, name } = req.body;
@@ -18,9 +19,10 @@ export const signup = async (req, res) => {
 
     const hashedpassword = await bcrypt.hash(password, 10);
 
-    const verificationToken =  Math.floor(100000 + Math.random() * 90000).toString();
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 90000
+    ).toString();
     console.log("verificationToken: ", verificationToken);
-    
 
     const user = new User({
       email,
@@ -35,15 +37,16 @@ export const signup = async (req, res) => {
     //jwt
     generateTokenAndSetCookie(res, user._id);
 
-res.status(201).json({
-    success: true,
-    message: "User created successfully",
-    user: {
+    await sendVerificationEmail(user.email, verificationToken);
+    
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user: {
         ...user._doc,
         password: undefined,
-    }
-})
-
+      },
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
