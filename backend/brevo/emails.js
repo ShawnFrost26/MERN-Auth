@@ -7,7 +7,7 @@ export const sendVerificationEmail = async (email, name, verificationToken) => {
     const emailContent = new brevo.SendSmtpEmail();
     emailContent.subject = "Verify Your Email";
     emailContent.htmlContent = VERIFICATION_EMAIL_TEMPLATE.replace(
-      "{verificationCode}", 
+      "{verificationCode}",
       verificationToken
     );
     emailContent.sender = sender;
