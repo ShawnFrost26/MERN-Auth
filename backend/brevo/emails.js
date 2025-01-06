@@ -1,5 +1,6 @@
 import { brevoClient, sender } from "../brevo/brevo.config.js";
 import {
+  PASSWORD_RESET_REQUEST_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
   WELCOME_EMAIL_TEMPLATE,
 } from "./emailTemplates.js";
@@ -52,3 +53,25 @@ export const sendWelcomeEmail = async (email, name) => {
     throw new Error(`Email delivery failed: ${error.message}`);
   }
 };
+
+export const sendForgotPasswordEmail = async (email, name, resetURL) => {
+  try {
+    const emailContent = new brevo.SendSmtpEmail();
+    emailContent.subject = "Reset your password";
+    emailContent.htmlContent = PASSWORD_RESET_REQUEST_TEMPLATE.replace(
+      "{name}",
+      name
+    ).replace("{resetURL}", resetURL);
+    emailContent.sender = sender;
+    emailContent.to = [{ email: email, name: name }];
+    emailContent.headers = {
+      "X-Mailin-tag": "forgot-password",
+    };
+
+    const response = await brevoClient.sendTransacEmail(emailContent);
+    // console.log("Verification email sent successfully");
+  } catch (error) {
+    // console.error("Error sending verification email:", error);
+    throw new Error(`Email delivery failed: ${error.message}`);
+  }
+}
