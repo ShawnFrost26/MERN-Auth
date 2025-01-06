@@ -1,5 +1,8 @@
 import { brevoClient, sender } from "../brevo/brevo.config.js";
-import { VERIFICATION_EMAIL_TEMPLATE } from "./emailTemplates.js";
+import {
+  VERIFICATION_EMAIL_TEMPLATE,
+  WELCOME_EMAIL_TEMPLATE,
+} from "./emailTemplates.js";
 import brevo from "@getbrevo/brevo";
 
 export const sendVerificationEmail = async (email, name, verificationToken) => {
@@ -17,9 +20,35 @@ export const sendVerificationEmail = async (email, name, verificationToken) => {
     };
 
     const response = await brevoClient.sendTransacEmail(emailContent);
-    console.log("Email sent successfully:", response);
+    // console.log("Verification email sent successfully");
   } catch (error) {
-    console.error("Error sending verification email:", error);
+    // console.error("Error sending verification email:", error);
+    throw new Error(`Email delivery failed: ${error.message}`);
+  }
+};
+
+export const sendWelcomeEmail = async (email, name) => {
+  try {
+    const emailContent = new brevo.SendSmtpEmail();
+    emailContent.subject = "Welcome aboard! Your account is ready to use.";
+    emailContent.htmlContent = WELCOME_EMAIL_TEMPLATE.replace(
+      "{name}",
+      name
+    ).replace(
+      "{welcomeImageURL}",
+      "https://img.freepik.com/free-vector/two-factor-authentication-concept-illustration_114360-5598.jpg?t=st=1735996956~exp=1736000556~hmac=46a199c0e73cc4b815345b3a40eb6d23b8bde2e423328285388bee892e90c7fa&w=740"
+    );
+
+    emailContent.sender = sender;
+    emailContent.to = [{ email: email, name: name }];
+    emailContent.headers = {
+      "X-Mailin-tag": "welcome-email",
+    };
+
+    const response = await brevoClient.sendTransacEmail(emailContent);
+    // console.log("Welcome email sent successfully");
+  } catch (error) {
+    // console.error("Error sending verification email:", error);
     throw new Error(`Email delivery failed: ${error.message}`);
   }
 };
