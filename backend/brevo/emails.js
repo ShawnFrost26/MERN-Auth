@@ -1,6 +1,7 @@
 import { brevoClient, sender } from "../brevo/brevo.config.js";
 import {
   PASSWORD_RESET_REQUEST_TEMPLATE,
+  PASSWORD_RESET_SUCCESS_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
   WELCOME_EMAIL_TEMPLATE,
 } from "./emailTemplates.js";
@@ -69,9 +70,31 @@ export const sendForgotPasswordEmail = async (email, name, resetURL) => {
     };
 
     const response = await brevoClient.sendTransacEmail(emailContent);
-    // console.log("Verification email sent successfully");
+    // console.log("Forget password email sent successfully");
   } catch (error) {
-    // console.error("Error sending verification email:", error);
+    // console.error("Error sending forget password email:", error);
     throw new Error(`Email delivery failed: ${error.message}`);
   }
-}
+};
+
+export const sendResetSuccessEmail = async (email, name) => {
+  try {
+    const emailContent = new brevo.SendSmtpEmail();
+    emailContent.subject = "Password reset successful";
+    emailContent.htmlContent = PASSWORD_RESET_SUCCESS_TEMPLATE.replace(
+      "{name}",
+      name
+    );
+    emailContent.sender = sender;
+    emailContent.to = [{ email: email, name: name }];
+    emailContent.headers = {
+      "X-Mailin-tag": "reset-password-successful",
+    };
+
+    const response = await brevoClient.sendTransacEmail(emailContent);
+    // console.log("Reset success email sent successfully");
+  } catch (error) {
+    // console.error("Error sending reset success email:", error);
+    throw new Error(`Email delivery failed: ${error.message}`);
+  }
+};
