@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-800 via-cyan-700 to-teal-600 flex items-center justify-center">
       <Routes>
         <Route path="/" element={"Homepage"} />
         <Route path="/signup" element={<SignUpPage />} />
