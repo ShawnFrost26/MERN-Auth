@@ -1,15 +1,19 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useState } from "react";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import Input from "../components/Input";
+import { useAuthStore } from "../store/authStore";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { login, isLoading, error } = useAuthStore();
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    await login(email, password);
   };
 
   return (
@@ -41,13 +45,18 @@ const LoginPage = () => {
               Forgot password?
             </Link>
           </div>
+          {error && <p className="text-red-500 font-semibold mb-2">{error}</p>}
           <button
             className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-teal-600 text-white 
 						font-bold rounded-lg shadow-lg hover:from-cyan-600
 						hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2
 						 focus:ring-offset-gray-900 transition duration-200"
           >
-            Log In
+            {isLoading ? (
+              <Loader className="w-6 h-6 animate-spin  mx-auto" />
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
       </div>
